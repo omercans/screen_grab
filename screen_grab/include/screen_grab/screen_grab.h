@@ -72,6 +72,7 @@ class ScreenGrab : public nodelet::Nodelet
   boost::recursive_mutex dr_mutex_;
 
   void spinOnce(const ros::TimerEvent& e);
+  bool grabRosImage(sensor_msgs::ImagePtr& im);
   bool first_error_;
 
   ros::Timer timer_;

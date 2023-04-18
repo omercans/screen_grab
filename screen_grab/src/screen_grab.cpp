@@ -259,6 +259,15 @@ void ScreenGrab::spinOnce(const ros::TimerEvent& e)
 {
   sensor_msgs::ImagePtr im(new sensor_msgs::Image);
 
+  if (grabRosImage(im))
+  {
+    screen_pub_.publish(im);
+  }
+}
+
+bool ScreenGrab::grabRosImage(sensor_msgs::ImagePtr& im)
+{
+
   // grab the image
   xImageSample = XGetImage(display, DefaultRootWindow(display),
                            x_offset_, y_offset_, width_, height_, AllPlanes, ZPixmap);
@@ -272,7 +281,7 @@ void ScreenGrab::spinOnce(const ros::TimerEvent& e)
                        << ", " << width_ << " " << height_
                        << ", " << screen_w_ << " " << screen_h_);
     first_error_ = false;
-    return;
+    return false;
   }
 
   if (!first_error_)
@@ -285,7 +294,7 @@ void ScreenGrab::spinOnce(const ros::TimerEvent& e)
 
   im->encoding = encoding_;
 
-  screen_pub_.publish(im);
+  return true;
 }
 }  // namespace screen_grab
 
