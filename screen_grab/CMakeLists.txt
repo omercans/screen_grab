@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge  # image_show
   dynamic_reconfigure
   image_transport
+  message_generation
   nodelet
   roscpp
   roslint
@@ -57,12 +58,11 @@ roslint_cpp()
 #   Message2.msg
 # )
 
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+# Generate services in the 'srv' folder
+add_service_files(
+  FILES
+  GetScreenshot.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -71,11 +71,11 @@ roslint_cpp()
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   sensor_msgs#   std_msgs
-# )
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  sensor_msgs#   std_msgs
+)
 
 generate_dynamic_reconfigure_options(
   cfg/ScreenGrab.cfg

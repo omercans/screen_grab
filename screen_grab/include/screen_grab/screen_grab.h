@@ -34,6 +34,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <nodelet/nodelet.h>
 #include <ros/ros.h>
+#include <screen_grab/GetScreenshot.h>
 #include <screen_grab/ScreenGrabConfig.h>
 #include <sensor_msgs/RegionOfInterest.h>
 #include <string>
@@ -48,6 +49,9 @@ class ScreenGrab : public nodelet::Nodelet
 
   ros::Subscriber roi_sub_;
   void roiCallback(const sensor_msgs::RegionOfInterest::ConstPtr& msg);
+
+  ros::ServiceServer screenshot_service_;
+  bool screenshotCallback(screen_grab::GetScreenshot::Request& req, screen_grab::GetScreenshot::Response& res);
 
   double update_rate_;
 
@@ -72,7 +76,7 @@ class ScreenGrab : public nodelet::Nodelet
   boost::recursive_mutex dr_mutex_;
 
   void spinOnce(const ros::TimerEvent& e);
-  bool grabRosImage(sensor_msgs::ImagePtr& im);
+  bool grabRosImage(sensor_msgs::Image& im);
   bool first_error_;
 
   ros::Timer timer_;

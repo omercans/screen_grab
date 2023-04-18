@@ -37,11 +37,11 @@
 #include <X11/Xutil.h>
 
 void XImage2RosImage(XImage& ximage, Display& _xDisplay, Screen& _xScreen,
-                     sensor_msgs::ImagePtr& im)
+                     sensor_msgs::Image& im)
 {
   XColor color;
 
-  im->header.stamp = ros::Time::now();
+  im.header.stamp = ros::Time::now();
 
   if (_xScreen.depths->depth == 24)
   {
@@ -50,13 +50,13 @@ void XImage2RosImage(XImage& ximage, Display& _xDisplay, Screen& _xScreen,
     const int wd = ximage.width;
     const int ht = ximage.height;
     const int frame_size = wd * ht * 4;
-    im->width = wd;
-    im->height = ht;
-    im->step = im->width * 4;
+    im.width = wd;
+    im.height = ht;
+    im.step = im.width * 4;
     // TODO(lucasw) extract this from X
-    // im->encoding = sensor_msgs::image_encodings::BGRA8;
-    im->data.resize(frame_size);
-    memcpy(&im->data[0], ximage.data, frame_size);
+    // im.encoding = sensor_msgs::image_encodings::BGRA8;
+    im.data.resize(frame_size);
+    memcpy(&im.data[0], ximage.data, frame_size);
   }
   else     // Extremly slow alternative for non 24bit-depth
   {
@@ -133,6 +133,11 @@ void ScreenGrab::checkRoi(int& x_offset, int& y_offset, int& width, int& height)
   }
 
   // ROS_INFO_STREAM(x_offset << " " << y_offset << " " << width << " " << height);
+}
+
+bool ScreenGrab::screenshotCallback(screen_grab::GetScreenshot::Request& req, screen_grab::GetScreenshot::Response& res)
+{
+  return grabRosImage(res.image);
 }
 
 void ScreenGrab::callback(
@@ -248,6 +253,7 @@ void ScreenGrab::onInit()
   updateConfig();
 
   roi_sub_ = getPrivateNodeHandle().subscribe("roi", 0, &ScreenGrab::roiCallback, this);
+  screenshot_service_ = getPrivateNodeHandle().advertiseService("get_screenshot", &ScreenGrab::screenshotCallback, this);
 
   const float period = 1.0 / update_rate_;
   ROS_INFO_STREAM("period " << period);
@@ -259,13 +265,13 @@ void ScreenGrab::spinOnce(const ros::TimerEvent& e)
 {
   sensor_msgs::ImagePtr im(new sensor_msgs::Image);
 
-  if (grabRosImage(im))
+  if (grabRosImage(*im))
   {
     screen_pub_.publish(im);
   }
 }
 
-bool ScreenGrab::grabRosImage(sensor_msgs::ImagePtr& im)
+bool ScreenGrab::grabRosImage(sensor_msgs::Image& im)
 {
 
   // grab the image
@@ -292,7 +298,7 @@ bool ScreenGrab::grabRosImage(sensor_msgs::ImagePtr& im)
 
   XDestroyImage(xImageSample);
 
-  im->encoding = encoding_;
+  im.encoding = encoding_;
 
   return true;
 }
