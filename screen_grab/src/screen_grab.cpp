@@ -196,7 +196,7 @@ void ScreenGrab::updateConfig()
 
 void ScreenGrab::onInit()
 {
-  screen_pub_ = getNodeHandle().advertise<sensor_msgs::Image>(
+  screen_pub_ = getPrivateNodeHandle().advertise<sensor_msgs::Image>(
                   "image", 5);
   // TODO(lucasw) move most of this into onInit
   // init
