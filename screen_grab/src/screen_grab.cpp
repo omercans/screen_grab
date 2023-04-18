@@ -231,7 +231,7 @@ void ScreenGrab::onInit()
   }
 
   double update_rate = 15;
-  bool publishing_enabled = true;
+  bool publishing_enabled = false;
   int x_offset = 0;
   int y_offset = 0;
   int width = 0;

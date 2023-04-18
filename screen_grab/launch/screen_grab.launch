@@ -2,9 +2,13 @@
 <launch>
 
   <arg name="update_rate" default="10" />
-  <arg name="publishing_enabled" default="true" />
-  <arg name="use_image_show" default="true" />
+  <arg name="publishing_enabled" default="false" />
+  <arg name="use_image_show" default="false" />
   <arg name="use_image_view" default="false" />
+  <arg name="x_offset" default="0" />
+  <arg name="y_offset" default="0" />
+  <arg name="width" default="0" /> <!-- 0 will set the width to full window width. -->
+  <arg name="height" default="0" /> <!-- 0 will set the height to full window height. -->
 
   <node name="nodelet_manager" pkg="nodelet" type="nodelet"
       args="manager" output="screen" />
@@ -13,10 +17,10 @@
       args="load screen_grab/ScreenGrab nodelet_manager" output="screen" >
     <param name="update_rate" value="$(arg update_rate)" />
     <param name="publishing_enabled" value="$(arg publishing_enabled)" />
-    <param name="x_offset" value="50" />
-    <param name="y_offset" value="50" />
-    <param name="width" value="500" />
-    <param name="height" value="500" />
+    <param name="x_offset" value="$(arg x_offset)" />
+    <param name="y_offset" value="$(arg y_offset)" />
+    <param name="width" value="$(arg width)" />
+    <param name="height" value="$(arg height)" />
   </node>
 
   <!-- image show takes much less cpu that image_view -->
