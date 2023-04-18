@@ -54,6 +54,7 @@ class ScreenGrab : public nodelet::Nodelet
   bool screenshotCallback(screen_grab::GetScreenshot::Request& req, screen_grab::GetScreenshot::Response& res);
 
   double update_rate_;
+  bool publishing_enabled_;
 
   typedef dynamic_reconfigure::Server<screen_grab::ScreenGrabConfig> ReconfigureServer;
   boost::shared_ptr< ReconfigureServer > server_;

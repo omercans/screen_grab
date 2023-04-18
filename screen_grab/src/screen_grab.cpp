@@ -103,6 +103,16 @@ void ScreenGrab::checkRoi(int& x_offset, int& y_offset, int& width, int& height)
 {
   // TODO(lucasw) with cv::Rect this could be one line rect1 & rect2
 
+  if(width == 0)
+  {
+    width = screen_w_;
+  }
+
+  if(height == 0)
+  {
+    height = screen_h_;
+  }
+
   // Need to check against resolution
   if ((x_offset + width) > screen_w_)
   {
@@ -161,6 +171,11 @@ void ScreenGrab::callback(
       // TODO(lucasw) update timer
     }
   }
+
+  if (level & 3)
+  {
+    publishing_enabled_ = config.publishing_enabled;
+  }
 }
 
 void ScreenGrab::updateConfig()
@@ -170,6 +185,7 @@ void ScreenGrab::updateConfig()
   // TODO(lucasw) just store config_ instead of x_offset_ etc.
   screen_grab::ScreenGrabConfig config;
   config.update_rate = update_rate_;
+  config.publishing_enabled = publishing_enabled_;
   config.x_offset = x_offset_;
   config.y_offset = y_offset_;
   config.width = width_;
@@ -215,20 +231,22 @@ void ScreenGrab::onInit()
   }
 
   double update_rate = 15;
+  bool publishing_enabled = true;
   int x_offset = 0;
   int y_offset = 0;
   int width = 0;
   int height = 0;
 
   bool rv0 = getPrivateNodeHandle().getParam("update_rate", update_rate);
-  bool rv1 = getPrivateNodeHandle().getParam("x_offset", x_offset);
-  bool rv2 = getPrivateNodeHandle().getParam("y_offset", y_offset);
-  bool rv3 = getPrivateNodeHandle().getParam("width", width);
-  bool rv4 = getPrivateNodeHandle().getParam("height", height);
+  bool rv1 = getPrivateNodeHandle().getParam("publishing_enabled", publishing_enabled);
+  bool rv2 = getPrivateNodeHandle().getParam("x_offset", x_offset);
+  bool rv3 = getPrivateNodeHandle().getParam("y_offset", y_offset);
+  bool rv4 = getPrivateNodeHandle().getParam("width", width);
+  bool rv5 = getPrivateNodeHandle().getParam("height", height);
 
   ROS_INFO_STREAM(static_cast<int>(rv0) << static_cast<int>(rv1)
-    << static_cast<int>(rv2) << static_cast<int>(rv3) << static_cast<int>(rv4));
-  ROS_INFO_STREAM(update_rate << " " << width << " " << height);
+    << static_cast<int>(rv2) << static_cast<int>(rv3) << static_cast<int>(rv4) << static_cast<int>(rv5));
+  ROS_INFO_STREAM(update_rate << " " << publishing_enabled << " " << width << " " << height);
   server_.reset(new ReconfigureServer(dr_mutex_, getPrivateNodeHandle()));
 
   dynamic_reconfigure::Server<screen_grab::ScreenGrabConfig>::CallbackType cbt =
@@ -237,6 +255,7 @@ void ScreenGrab::onInit()
 
   // TODO(lucasw) do I really need to do this, or does dr clobber my params?
   update_rate_ = update_rate;
+  publishing_enabled_ = publishing_enabled;
   x_offset_ = x_offset;
   y_offset_ = y_offset;
   width_ = width;
@@ -263,6 +282,11 @@ void ScreenGrab::onInit()
 
 void ScreenGrab::spinOnce(const ros::TimerEvent& e)
 {
+  if (!publishing_enabled_)
+  {
+    return;
+  }
+
   sensor_msgs::ImagePtr im(new sensor_msgs::Image);
 
   if (grabRosImage(*im))

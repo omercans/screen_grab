@@ -2,6 +2,7 @@
 <launch>
 
   <arg name="update_rate" default="10" />
+  <arg name="publishing_enabled" default="true" />
   <arg name="use_image_show" default="true" />
   <arg name="use_image_view" default="false" />
 
@@ -11,6 +12,7 @@
   <node name="screen_grab" pkg="nodelet" type="nodelet"
       args="load screen_grab/ScreenGrab nodelet_manager" output="screen" >
     <param name="update_rate" value="$(arg update_rate)" />
+    <param name="publishing_enabled" value="$(arg publishing_enabled)" />
     <param name="x_offset" value="50" />
     <param name="y_offset" value="50" />
     <param name="width" value="500" />
