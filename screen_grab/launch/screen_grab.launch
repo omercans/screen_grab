@@ -10,7 +10,7 @@
   <arg name="width" default="0" /> <!-- 0 will set the width to full window width. -->
   <arg name="height" default="0" /> <!-- 0 will set the height to full window height. -->
 
-  <node name="nodelet_manager" pkg="nodelet" type="nodelet"
+  <node name="nodelet_manager_screen_grab" pkg="nodelet" type="nodelet"
       args="manager" output="screen" />
 
   <node name="screen_grab" pkg="nodelet" type="nodelet"
